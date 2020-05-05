@@ -7,7 +7,7 @@ Bookworm: a book collection service.
 <h3>Solution:</h3>
 After looking at the binary through Ghidra, we can see that there is a use after free vulnerability both with the read_summary and write_summary functions since the delete_book function never actually nulls the pointer.  Looking at how the heap is allocated and freed can help us understand how to exploit this vulnerability.
 
-![Image of Main](https://github.com/h3lpful/ctf_writeups/blob/master/bookworm/images/vis01.PNG)
+![Image of Vis01](https://github.com/h3lpful/ctf_writeups/blob/master/bookworm/images/vis01.png)
 
 Notice that when a book is made, the address of the read_summary function is on the block just below the summary and a pointer to the summary's address is also below it.  Once this chunk is freed:
 
