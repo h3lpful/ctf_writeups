@@ -1,5 +1,31 @@
-#!/usr/bin/python3
+<h1>Bookworm</h1>
+<h2>HackPack CTF 2020 PWN</h2>
 
+<h3>Problem:</h3>
+Bookworm: a book collection service.
+
+<h3>Solution:</h3>
+After looking at the binary through Ghidra, we can see that there is a use after free vulnerability both with the read_summary and write_summary functions since the delete_book function never actually nulls the pointer.  Looking at how the heap is allocated and freed can help us understand how to exploit this vulnerability.
+
+![Image of Main](https://github.com/h3lpful/ctf_writeups/blob/master/bookworm/images/vis01.PNG)
+
+Notice that when a book is made, the address of the read_summary function is on the block just below the summary and a pointer to the summary's address is also below it.  Once this chunk is freed:
+
+![Image of Main](https://github.com/h3lpful/ctf_writeups/blob/master/bookworm/images/vis02.PNG)
+
+The tcachebins have the area where the function address initially was delegated for the next heap allocation.  So when we allocate another book:
+
+![Image of Main](https://github.com/h3lpful/ctf_writeups/blob/master/bookworm/images/vis03.PNG)
+
+The summary is now located where book 0s function call and ptr were.  This gives us as many arbitrary function calls, with a single arg, as we want.  One thing to note is that the summary can be changed, and therefore has to be smaller than 23 bytes and the title has to be over 23 bytes so that the summary of book 1 will be where the function calls of book 0 were.
+
+Since there is no PIE we could call whatever functions are available, but I see nothing that we can use to get the flag.  This means we will need to access libc in order to call system.  One function available for us is puts, which we can feed a location on the plt to get a libc address which we can then use to calculate the libc address of system, I used puts itself.  
+
+With this method we need one more leak, since system takes a pointer, and we can target the locations of our first book titled "cat flag.txt".  Using Ghidra to find the location of the variable bookcase, we can get a leak of the heap location the first element of the bookcase variable is pointing too, and calculate the offset to our "cat flag.txt".
+
+Once that is done the only thing left is to build the payload.  Below is the exploit code I used:
+
+```Python3
 from pwn import *
 
 target = './bookworm'
@@ -89,3 +115,6 @@ print(p.recvline().split(b': ')[1].rstrip(b'\n'))
 
 p.close()
 
+```
+
+flag{N0th1ng_1$_3v3r_Fr33}
