@@ -1,9 +1,9 @@
-<h1>Climb
+<h1>Climb</h1>
 
-<h3>Problem:
+<h3>Problem:</h3>
 "Can you help me climb the rope?"
 
-<h3>Solution:
+<h3>Solution:</h3>
 Based on the problem, the first thing we are looking for is a buffer overflow vulnerability that can allow us to ROP.
 
 After looking at the binary through Ghidra, we notice that main reads 500 bytes into a 32 byte variable.  
