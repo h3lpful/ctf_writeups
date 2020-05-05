@@ -65,3 +65,5 @@ print(p.recvuntil('respond?'))
 p.send(pl)
 p.interactive()
 ```
+
+flag{w0w_A_R34L_LiF3_R0pp3r!}
